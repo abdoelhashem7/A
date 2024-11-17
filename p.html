@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إرسال رسالة مجهولة</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+        }
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .input-box {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            background-color: #f9fbfc;
+            color: #333;
+            transition: border-color 0.3s;
+        }
+        .input-box:focus {
+            border-color: #87a9bb;
+            outline: none;
+        }
+        .send-btn {
+            background-color: #87a9bb;
+            color: white;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .send-btn:hover {
+            background-color: #5a8098;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>إرسال رسالة مجهولة</h1>
+    
+    <textarea class="input-box" placeholder="اكتب رسالتك هنا..." rows="4"></textarea>
+    <button class="send-btn" onclick="sendMessage()">إرسال</button>
+</div>
+
+<script>
+    function sendMessage() {
+        alert("تم إرسال الرسالة بنجاح!");
+    }
+</script>
+
+</body>
+</html>
