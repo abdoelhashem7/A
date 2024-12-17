@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Map with Reviews</title>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css">
+  <style>
+    /* General Styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      box-sizing: border-box;
+    }
+
+    /* Map container */
+    #map {
+      width: 100%;
+      height: 60vh;
+      background: #f0f0f0;
+    }
+
+    /* Client Bar */
+    .client-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 10px;
+      overflow-y: auto;
+      max-height: 30vh;
+    }
+
+    .client-item {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease;
+      cursor: pointer;
+    }
+
+    .client-item:hover {
+      background: #e6e6e6;
+    }
+
+    .header-content h5 {
+      margin: 0;
+      color: #333;
+    }
+
+    .header-content p {
+      margin: 5px 0 0;
+      color: #666;
+    }
+
+    /* Responsive Styles */
+    @media screen and (max-width: 768px) {
+      #map {
+        height: 50vh;
+      }
+
+      .client-item {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Map Container -->
+  <div id="map"></div>
+
+  <!-- Client Reviews -->
+  <div class="client-bar" id="client-bar">
+    <!-- Dynamic Items will load here -->
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
+  <script>
+    // Mapbox Access Token
+    mapboxgl.accessToken = 'pk.eyJ1Ijoibm91ZmVsZ2hheWF0aTEiLCJhIjoiY20zb2wwdjJpMDRjOTJpc2Nic3ZsbG1lOCJ9.lyOTXJs_IKLh6hG0lUpHdw';
+
+    // Lazy Load Map
+    let mapInitialized = false;
+    function lazyLoadMap() {
+      const mapContainer = document.getElementById('map');
+      if (mapContainer.getBoundingClientRect().top < window.innerHeight && !mapInitialized) {
+        initializeMap();
+        mapInitialized = true;
+      }
+    }
+
+    // Initialize Map
+    function initializeMap() {
+      const map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [0, 0],
+        zoom: 2
+      });
+
+      const bounds = new mapboxgl.LngLatBounds();
+      const locations = [];
+
+      // Fetch Data
+      fetch('https://gsx2json.com/api?id=1E3Yn8gwdVKZEh7SQre1PadCcYwg52LRSi3E89xEQodY&sheet=Sheet1')
+        .then(response => response.json())
+        .then(data => {
+          const clientBar = document.getElementById('client-bar');
+          data.rows.forEach((row, index) => {
+            if (row.Longitude && row.Latitude) {
+              const coords = [parseFloat(row.Longitude), parseFloat(row.Latitude)];
+              bounds.extend(coords);
+
+              // Add Marker
+              const popup = new mapboxgl.Popup({ offset: 25 }).setText(row['Company Name']);
+              new mapboxgl.Marker().setLngLat(coords).setPopup(popup).addTo(map);
+
+              // Append Client Item
+              const clientItem = document.createElement('div');
+              clientItem.classList.add('client-item');
+              clientItem.innerHTML = `
+                <div class="header-content">
+                  <h5>${row['Company Name']}</h5>
+                  <p>${row['Address (City)']}</p>
+                </div>
+              `;
+              clientItem.onclick = () => {
+                map.flyTo({ center: coords, zoom: 5 });
+              };
+              clientBar.appendChild(clientItem);
+            }
+          });
+
+          // Fit Map Bounds
+          map.fitBounds(bounds, { padding: 20 });
+        });
+    }
+
+    // Scroll Event for Lazy Loading
+    window.addEventListener('scroll', lazyLoadMap);
+    lazyLoadMap(); // Trigger on page load
+  </script>
+</body>
+</html>

